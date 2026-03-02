@@ -11,14 +11,18 @@ export default function useUsers() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     async function hook() {
       const url = "https://jsonplaceholder.typicode.com/users";
       setLoading(true);
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, { signal });
         if (!response.ok) throw new Error(`${response.status}`);
         const data: User[] = await response.json();
         setUsers(data);
+        setError(undefined);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -26,6 +30,7 @@ export default function useUsers() {
       }
     }
     hook();
+    return () => controller.abort();
   }, []);
 
   return { users, loading, error };
