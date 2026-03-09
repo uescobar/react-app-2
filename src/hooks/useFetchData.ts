@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 
-type User = {
-  id: number;
-  name: string;
-};
-
-export default function useUsers() {
-  const [users, setUsers] = useState<User[]>([]);
+export default function useFetchData<T>(url: string) {
+  const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
@@ -15,13 +10,12 @@ export default function useUsers() {
     const { signal } = controller;
 
     async function hook() {
-      const url = "https://jsonplaceholder.typicode.com/users";
       setLoading(true);
       try {
         const response = await fetch(url, { signal });
         if (!response.ok) throw new Error(`${response.status}`);
-        const data: User[] = await response.json();
-        setUsers(data);
+        const data: T[] = await response.json();
+        setData(data);
         setError(undefined);
       } catch (error) {
         setError((error as Error).message);
@@ -33,5 +27,5 @@ export default function useUsers() {
     return () => controller.abort();
   }, []);
 
-  return { users, loading, error };
+  return { data, loading, error };
 }
