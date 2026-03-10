@@ -1,3 +1,4 @@
+import { id } from "zod/locales";
 import useHttpData from "./hooks/useHttpData";
 
 type User = {
@@ -11,7 +12,7 @@ function App() {
     data: users,
     loading,
     error,
-    addData: addUser,
+    updateData: updateUser,
   } = useHttpData<User>(url);
 
   if (loading) {
@@ -24,7 +25,7 @@ function App() {
 
   return (
     <ul>
-      <button onClick={() => addUser({ name: "Chanchito feliz" })}>
+      <button onClick={() => updateUser({ id: 1, name: "Chanchito feliz" })}>
         Enviar
       </button>
       {users.map((user) => (
