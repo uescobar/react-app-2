@@ -1,12 +1,18 @@
-import useFetchData from "./hooks/useFetchData";
+import useHttpData from "./hooks/useHttpData";
+
 type User = {
-  id: number;
+  id?: number;
   name: string;
 };
 
 function App() {
   const url = "https://jsonplaceholder.typicode.com/users";
-  const { data: users, loading, error } = useFetchData<User>(url);
+  const {
+    data: users,
+    loading,
+    error,
+    addData: addUser,
+  } = useHttpData<User>(url);
 
   if (loading) {
     return <p>Cargando</p>;
@@ -18,6 +24,9 @@ function App() {
 
   return (
     <ul>
+      <button onClick={() => addUser({ name: "Chanchito feliz" })}>
+        Enviar
+      </button>
       {users.map((user) => (
         <li key={user.id}>{user.name}</li>
       ))}

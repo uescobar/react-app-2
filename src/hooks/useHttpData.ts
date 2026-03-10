@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function useFetchData<T>(url: string) {
+export default function useHttpData<T>(url: string) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -27,5 +27,28 @@ export default function useFetchData<T>(url: string) {
     return () => controller.abort();
   }, []);
 
-  return { data, loading, error };
+  const addData = async (element: T) => {
+    const initialData = [...data];
+    setData([{ id: 0, ...element }, ...data]);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(element),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        setData(initialData);
+        throw new Error(`${response.status}`);
+      }
+
+      const savedData = await response.json();
+      setData([savedData, ...initialData]);
+    } catch (error) {
+      setError((error as Error).message);
+    }
+  };
+
+  return { data, loading, error, addData };
 }
